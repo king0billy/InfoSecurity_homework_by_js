@@ -1,29 +1,59 @@
-<div class="File">添加附件</div>
-<input id="upfile" name="upfile" type="file" multiple="multiple" style="display:none" />
-<input id="upfile" name="upfile" type="file" multiple="multiple" />
-<div class="FileArea"></div>
-<div>
-  上传文件 ： <input type="file" name = "file" id = "fileId" /> 
-</div>
-<script>
- 1 var str = "";
- 2     $("#upfile").click();
- 3     $("#upfile").on("change", function () {
- 4         var obj = document.getElementById("upfile");
- 5         var length = obj.files.length;
- 6         for (var i = 0; i < length; i++) {
- 7             $(".FileArea").html("");;
- 8             var temp = obj.files[i].name;
- 9             str += "<div>" + temp + "</div>";
-10         }
-11         $(".FileArea").append(str);
-12     });
-function getFile() {
-  //js写法 
-  var file=document.getElementById('fileId').files[0];//获取文件流
-  var fileName = file.name;//获取文件名
-  //jq写法
-  var file = $('#fileId')[0].files[0];
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>列表</title>
+</head>
+<body>
+  <div>
+    <div class="File">添加附件</div>
+    <!--<input id="upfile" name="upfile" type="file" multiple="multiple" style="display:none" />-->
+    <input id="upfile" name="upfile" type="file" multiple="multiple" />
+    <div class="FileArea"></div>
+
+    <div>
+      上传文件(罪魁祸首在script src) ： <input id = "fileId" type="file" name = "file"  />
+    </div>
+
+  </div>
+</body>
+<script >
+  var str = "";
+  // $("#upfile").click();
+  // $("#upfile").on("change", function () {
+  //   var blob = this.files[0];
+  //     var obj = document.getElementById("upfile");
+  //     var length = obj.files.length;
+  //     for (var i = 0; i < length; i++) {
+  //         $(".FileArea").html("");
+  // 	 console.log("fku");
+  // 		console.log(obj.files[i]);
+  //         var temp = obj.files[i].name;
+  //         str += "<div>" + temp + "</div>";
+  //     }
+  //     $(".FileArea").append(str);
+  // });
+  var fileInput = document.querySelector("#fileId");
+  fileInput.addEventListener("change", function (event) {
+    var file = fileInput.files[0];
+    var reader = new FileReader();
+    reader.readAsBinaryString(file);
+    console.log(fileInput.files);
+    // var blob = this.files[0];
+    // var blob = new Blob(file);
+    // console.log (blob);
+  }, false);
+  // function getFile() {
+  //   //js写法
+  //   var file=document.getElementById('fileId').files[0];//获取文件流
+  //   var fileName = file.name;//获取文件名
+  //   //jq写法
+  //   var file = $('#fileId')[0].files[0];
+  // }
 </script>
+</html>
+
+
+
 
