@@ -7,50 +7,48 @@
 </head>
 <body>
   <div>
-    <div class="File">添加附件</div>
-    <!--<input id="upfile" name="upfile" type="file" multiple="multiple" style="display:none" />-->
-    <input id="upfile" name="upfile" type="file" multiple="multiple" />
-    <div class="FileArea"></div>
-
     <div>
       上传文件(罪魁祸首在script src) ： <input id = "fileId" type="file" name = "file"  />
     </div>
-
+    html5新增的input file,,,没有用到jquery和js的es6,,,file.length和result.length相同<br>
+    https://www.cnblogs.com/tianma3798/p/4355949.html<br>
+    <progress id="pro" value="0"></progress>
+    <p id="result" style="width:100%;word-break:break-all;word-wrap:break-word;"></p>
   </div>
 </body>
 <script >
-  var str = "";
-  // $("#upfile").click();
-  // $("#upfile").on("change", function () {
-  //   var blob = this.files[0];
-  //     var obj = document.getElementById("upfile");
-  //     var length = obj.files.length;
-  //     for (var i = 0; i < length; i++) {
-  //         $(".FileArea").html("");
-  // 	 console.log("fku");
-  // 		console.log(obj.files[i]);
-  //         var temp = obj.files[i].name;
-  //         str += "<div>" + temp + "</div>";
-  //     }
-  //     $(".FileArea").append(str);
-  // });
-  var fileInput = document.querySelector("#fileId");
-  fileInput.addEventListener("change", function (event) {
-    var file = fileInput.files[0];
+  // var fileInput = document.querySelector("#fileId");
+  // fileInput.addEventListener("change", function (event) {
+  //   var file = fileInput.files[0];
+  //   var reader = new FileReader();
+  //   reader.readAsBinaryString(file);
+  //   console.log(fileInput.files);
+  //   reader.onload = function () {
+  //     document.getElementById('result').innerHTML = reader.result;
+  //   }
+  // }, false);
+  var file1 = document.getElementById('fileId');
+  file1.onchange = function () {
+    var file = file1.files[0];
+    console.log(file);
+    //读取为二进制
     var reader = new FileReader();
     reader.readAsBinaryString(file);
-    console.log(fileInput.files);
-    // var blob = this.files[0];
-    // var blob = new Blob(file);
-    // console.log (blob);
-  }, false);
-  // function getFile() {
-  //   //js写法
-  //   var file=document.getElementById('fileId').files[0];//获取文件流
-  //   var fileName = file.name;//获取文件名
-  //   //jq写法
-  //   var file = $('#fileId')[0].files[0];
-  // }
+    // reader.readAsText(file);
+    //显示进度
+    var pro = document.getElementById('pro');
+    pro.max = file.size;
+    pro.value = 0;
+    reader.onprogress = function (e) {
+      pro.value = e.loaded;
+    }
+    reader.onload = function () {
+      document.getElementById('result').innerHTML = reader.result;
+      // console.log(reader);
+      // console.log(reader.result);
+      console.log(reader.result.length);
+    }
+  }
 </script>
 </html>
 
