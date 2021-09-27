@@ -10,6 +10,7 @@
     html5新增的input file,,,没有用到jquery和js的es6,,,file.length和result.length相同,,,(罪魁祸首在script src) <br>
     https://www.cnblogs.com/tianma3798/p/4355949.html<br>
     https://blog.csdn.net/u010503822/article/details/106699416/<br>
+    https://www.jeeinn.com/2020/07/1339/-> https://stackoverflow.com/questions/20566421/xor-of-two-hex-strings-in-javascript<br>
     <div>
       上传文件: <input id = "fileId" type="file" name = "file"  />
     </div>
@@ -22,19 +23,59 @@
   </div>
 </body>
 <script >
+  /***************************=**************************************************************/
   document.getElementById("xor").onclick=function(){
     console.log(document.getElementById("passWord").value);
-  }
+    var a = '0b36bf0f61db95b7ad95c130dcfe5812c2c92a070afdf5579e374d4d443f8ec8';
+    var b = 'a7e2acedcba29cc0dabb5efa58babd28c0c1a138603c4f7ea8463706e479df9a';
+    var c = document.getElementById('result').innerHTML;
+    function hexToBytes(hex) {
+      hex = hex.toString();
+      for (var bytes = [], c = 0; c < hex.length; c += 2)
+        bytes.push(parseInt(hex.substr(c, 2), 16));
+      return bytes;
+    }
 
-  /***************************=************************/
+    // Convert a byte array to a hex string
+    function bytesToHex(bytes) {
+      for (var hex = [], i = 0; i < bytes.length; i++) {
+        var current = bytes[i] < 0 ? bytes[i] + 256 : bytes[i];
+        hex.push((current >>> 4).toString(16));
+        hex.push((current & 0xF).toString(16));
+      }
+      return hex.join("");
+    }
+
+    var x = hexToBytes(a);
+    var y = hexToBytes(b);
+    var z1 = [];
+    var z2 = new Array();
+    for(var i=0; i < x.length; i++){
+      z1.push(x[i] ^ y[i]);
+    }
+    for(i=0; i <z1.length; i++){
+      z2.push(z1[i] ^ y[i]);
+    }
+    console.log("z1="+bytesToHex(z1));
+    console.log("z2="+bytesToHex(z2));
+    console.log("x="+bytesToHex(x));
+    console.log("c="+c);
+    console.log("hexToBytes(c)="+hexToBytes(c));//not a number
+    console.log("bytesToHex(c)="+bytesToHex(c));
+    console.log("reader="+reader);
+    console.log("reader.result="+reader.result.byteLength);
+    console.log("x2="+x2);
+  }
+  /***************************=**************************************************************/
+  var reader = new FileReader();
+  var x2;
   var file1 = document.getElementById('fileId');
   file1.onchange = function () {
     var file = file1.files[0];
     console.log(file);
     //读取为二进制
-    var reader = new FileReader();
-    // reader.readAsArrayBuffer(file);
-    reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(file);
+    // reader.readAsBinaryString(file);
     // reader.readAsText(file);
     //显示进度
     var pro = document.getElementById('pro');
@@ -46,20 +87,19 @@
     reader.onload = function () {
       document.getElementById('result').innerHTML = reader.result;
       // console.log(reader);
-      // console.log(reader.result);
-
+      console.log(reader.result);
       console.log(reader.result.length);
+      console.log(reader.result.byteLength);
+      /**typedView**/
+      x2 = new Int8Array(reader.result);
+      console.log(x2);
+      /**typedView,必须是4的倍数**/
+      // const x1 = new Int32Array(reader.result);
+      // console.log(x1);
     }
   }
-  /***************************=************************/
+  /***************************=**************************************************************/
   /**封装blob对象*/
-  // function dataURLtoBlob(base64Str, mimeTypeStr) {
-  //   var bstr = atob(base64Str), n = bstr.length, u8arr = new Uint8Array(n);
-  //   while (n--) {
-  //     u8arr[n] = bstr.charCodeAt(n);
-  //   }
-  //   return new Blob([u8arr], { type: mimeTypeStr });
-  // }
   /**创建一个a标签，并做下载点击事件*/
   function downloadFile(hrefUrl,fileName){
     var a = document.createElement("a")
@@ -72,7 +112,6 @@
   }
   /**下载文件的方法*/
   function downloadFileByBase64(base64Str, mimeTypeStr, fileName){
-    // var myBlob = dataURLtoBlob(base64Str, mimeTypeStr)
     // var myUrl = URL.createObjectURL(myBlob)
     var myUrl = URL.createObjectURL(base64Str)
     downloadFile(myUrl,fileName)
@@ -83,13 +122,6 @@
     // saveAs(blob, "file.txt");//saveAs(blob,filename)
     downloadFileByBase64(file1.files[0], 'image/png', 'tupian.png');
   };
-  /*************************** 测试代码 start ************************/
-
-  // var tupian='iVBORw0KGgoAAAANSUhEUgAAACEAAAAhCAYAAABX5MJvAAAACXBIWXMAAAsSAAALEgHS3X78AAAEk0lEQVRYhbVXS09bRxQ+N3bNRdjEai3UYiGMYdFFUKzykKoKSpWN1QU1YtVVCavu4vML4vQPDFGURRYosIGtQxeVF8hG2cGiICMUVUh1awlSQaldVLBsB1fncsaM773Dq80nWXPndeabOd85MzYajQbcBogYBIAYAGwKIUq3MsK442i5BhBxDgD+AoAslVy/NW58Eog4AwAvHR0AD4UQC47Wa+A2J5HgcgsA+rgkzDhGvkcSQeWbtLDpGHFDeHXDWXi06wiLL81dVH4JAPcBoAAAd7k9p8yd4XnUn75KuK6aYAI5XkhiSwgR437y/XdK3yshREI3DwAmLiOic8ecYmiNy/uImKQPIQTt9AW3vyAC/D3jNo/taaEjEZGHIoSYoJ1yPaGMeWsr1f5XPA9t9lyh1YTcGSKS8B5wvQAXPo+xMGNcT3M/6eUBIk5cN2J0JBYU8WWV9k8RkRbqVdq+4R8d+R63+W3zLnWHqzB5t+T/FKv/TwD4SOn+jQ1v8okkmLSEHF8mG0KI65FARGnMEVas+t8BIAAAiyxMB+lwOCympqagv79fJZtExJwS7mS7JbdYJFxCrsxhtQkXd8UjGYqOrZwjUq1Wf/H5fB/YO1ZWVirZbNZUmlo24imXyyQgoTCnXdOEzzOZzJtMJkPsvweAjwHg23g8/ta+CGPO4/F85mglAfX2eldXV1X7sUwmsxWPx98AhyiRAE4q5JKHPFeKMitj336MNsRkdWNjA5aXl5u9pmnC+Pj4cx4j75rm+DscZsD+iiik6pxw1vhbakOHZpZcWlqC9fV1KBQKFdl2cHAQ54UdOcPL8S2j4Gel77kQIsmL51j9CQ5fiQm7QRV+v/8PGc5dXV39tVrNCtu9vb2/T05Omna8QogCJ5a0Ev9PJQGGzBspRCR1R2zjr0Qi0aLnTk5kKXkS0teOY+KwDXI+KNKiHR0drxuNRq9hGIGrFq7X6z5H4wUeczpYcM2Y7Pu0LQERDoeHh+8ZhtFs2NnZqRaLRdfFstnsJ6FQqNLW1nZgGMaZaZrekZGRsDIkpSVBCUYhUFbeDD8NDQ19AQBRqmxvb8P8/LwrAQKJk8O9R7bt7+9XJicnZc6w3KkjIQW3yIReA8A98mVPT8+PnLhgYGAABgcH4fT0tGXy7u6uVYbDYWhvb2/pGxsbO2FicoNaEhJSE++4XmI3WSQo/mdnZx2TEM9v8Onp6WpfX5/9pD5Uvq3Xmu49IZ9qFPu/KjmAoiRXq9WWHTNccHZ2pnUVJy0rAl1PQgiRYnE+UpqfCCFyiEhR9DW5YXR01DpuwzDq0WjU1ZZtUZkYc3wLl7QkmAjdfimXf1nE/m4+n4d8Pr/IFx/lG4eNzs7OoiLKpPoYVqElwURKLhNlzn/CJ0ax/rhardZ9Pp9ljwR5dHQEgUDA7zDqgktJaCCfcEkmYPn18PCw1N3dHYJzYZ4eHx//Y5pmSDFRcDenF+ZlmFNyx0uZQyqVyjM5x+PxtAeDQZXA2v9Kgq9z+QJf4/KraDT6A905jgnngtQ9hCxo35j/AfKZSLDuhqtsvQ8SNwMA/AsjMqbmUsz4jAAAAABJRU5ErkJggg==';
-  //
-  // downloadFileByBase64(tupian, 'image/png', 'tupian.png');
-
-  /*************************** 测试代码 end ************************/
 </script>
 </html>
 
