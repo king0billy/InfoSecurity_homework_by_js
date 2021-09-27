@@ -24,47 +24,64 @@
 </body>
 <script >
   /***************************=**************************************************************/
+  // document.getElementById("xor").onclick=function(){
+  //   console.log(document.getElementById("passWord").value);
+  //   var a = '0b36bf0f61db95b7ad95c130dcfe5812c2c92a070afdf5579e374d4d443f8ec8';
+  //   var b = 'a7e2acedcba29cc0dabb5efa58babd28c0c1a138603c4f7ea8463706e479df9a';
+  //   var c = document.getElementById('result').innerHTML;
+  //   function hexToBytes(hex) {
+  //     hex = hex.toString();
+  //     for (var bytes = [], c = 0; c < hex.length; c += 2)
+  //       bytes.push(parseInt(hex.substr(c, 2), 16));
+  //     return bytes;
+  //   }
+  //
+  //   // Convert a byte array to a hex string
+  //   function bytesToHex(bytes) {
+  //     for (var hex = [], i = 0; i < bytes.length; i++) {
+  //       var current = bytes[i] < 0 ? bytes[i] + 256 : bytes[i];
+  //       hex.push((current >>> 4).toString(16));
+  //       hex.push((current & 0xF).toString(16));
+  //     }
+  //     return hex.join("");
+  //   }
+  //
+  //   var x = hexToBytes(a);
+  //   var y = hexToBytes(b);
+  //   var z1 = [];
+  //   var z2 = new Array();
+  //   for(var i=0; i < x.length; i++){
+  //     z1.push(x[i] ^ y[i]);
+  //   }
+  //   for(i=0; i <z1.length; i++){
+  //     z2.push(z1[i] ^ y[i]);
+  //   }
+  //   console.log("z1="+bytesToHex(z1));
+  //   console.log("z2="+bytesToHex(z2));
+  //   console.log("x="+bytesToHex(x));
+  //   console.log("c="+c);
+  //   console.log("hexToBytes(c)="+hexToBytes(c));//not a number
+  //   console.log("bytesToHex(c)="+bytesToHex(c));
+  //   console.log("reader="+reader);
+  //   console.log("reader.result="+reader.result.byteLength);
+  //   console.log("x2="+x2);
+  // }
   document.getElementById("xor").onclick=function(){
-    console.log(document.getElementById("passWord").value);
-    var a = '0b36bf0f61db95b7ad95c130dcfe5812c2c92a070afdf5579e374d4d443f8ec8';
-    var b = 'a7e2acedcba29cc0dabb5efa58babd28c0c1a138603c4f7ea8463706e479df9a';
-    var c = document.getElementById('result').innerHTML;
-    function hexToBytes(hex) {
-      hex = hex.toString();
-      for (var bytes = [], c = 0; c < hex.length; c += 2)
-        bytes.push(parseInt(hex.substr(c, 2), 16));
-      return bytes;
+    // console.log(document.getElementById("passWord").value);
+    let val = []
+    for (let i = 0; i < document.getElementById("passWord").value.length; i++) {
+      console.log(document.getElementById("passWord").value.charCodeAt(i))
+      //汉字占两位但是
+        val.push(document.getElementById("passWord").value.charCodeAt(i).toString(16))
     }
+    console.log(val);
+    // 将16进制转化为ArrayBuffer
+    // return new Uint8Array(parseInt(h, 16)).buffer
+    // let arrayBuffer = new Int8Array(document.getElementById("passWord").value).buffer;
+    // console.log(arrayBuffer);
+    // let arr2 = Array.prototype.slice.call(new Int8Array(arrayBuffer ));
+    // console.log(arr2);
 
-    // Convert a byte array to a hex string
-    function bytesToHex(bytes) {
-      for (var hex = [], i = 0; i < bytes.length; i++) {
-        var current = bytes[i] < 0 ? bytes[i] + 256 : bytes[i];
-        hex.push((current >>> 4).toString(16));
-        hex.push((current & 0xF).toString(16));
-      }
-      return hex.join("");
-    }
-
-    var x = hexToBytes(a);
-    var y = hexToBytes(b);
-    var z1 = [];
-    var z2 = new Array();
-    for(var i=0; i < x.length; i++){
-      z1.push(x[i] ^ y[i]);
-    }
-    for(i=0; i <z1.length; i++){
-      z2.push(z1[i] ^ y[i]);
-    }
-    console.log("z1="+bytesToHex(z1));
-    console.log("z2="+bytesToHex(z2));
-    console.log("x="+bytesToHex(x));
-    console.log("c="+c);
-    console.log("hexToBytes(c)="+hexToBytes(c));//not a number
-    console.log("bytesToHex(c)="+bytesToHex(c));
-    console.log("reader="+reader);
-    console.log("reader.result="+reader.result.byteLength);
-    console.log("x2="+x2);
   }
   /***************************=**************************************************************/
   var reader = new FileReader();
@@ -120,7 +137,9 @@
   exportButton.onclick=function(){
     // var blob = new Blob([reader.result]);
     // saveAs(blob, "file.txt");//saveAs(blob,filename)
-    downloadFileByBase64(file1.files[0], 'image/png', 'tupian.png');
+    // downloadFileByBase64(new Blob([new Int8Array(x2).buffer]), 'image/png', 'tupian.png');
+    downloadFileByBase64(new Blob([x2.buffer]), '', 'tupian.xlsx');
+    // downloadFileByBase64(reader.result, 'image/png', 'tupian.png');
   };
 </script>
 </html>
