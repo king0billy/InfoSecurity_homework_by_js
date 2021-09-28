@@ -7,125 +7,59 @@
 </head>
 <body>
   <div>
-    html5新增的input file,,,没有用到jquery和js的es6,,,file.length和result.length相同,,,(罪魁祸首在script src) <br>
+    参考的部分资料如下: <br>
     https://www.cnblogs.com/tianma3798/p/4355949.html<br>
     https://blog.csdn.net/u010503822/article/details/106699416/<br>
     https://www.jeeinn.com/2020/07/1339/-> https://stackoverflow.com/questions/20566421/xor-of-two-hex-strings-in-javascript<br>
     <div>
       上传文件: <input id = "fileId" type="file" name = "file"  />
     </div>
-    <progress id="pro" value="0"></progress><br>
-    <label for="passWord">输入密码:</label> <input type="text" id="passWord" placeholder="不能为空否则出错卡死" value="testKey"/>
+    <div>从磁盘读入浏览器进程的进度条:<progress id="pro" value="0"></progress><br></div>
+    <label for="myKey">输入密码:</label> <input type="text" id="myKey" placeholder="不能为空否则出错卡死" value="testKey"/>
     <input type="button" id="exportPassWord" value="下载密码"/>
     <input type="button" id="xor" value="异或"/><br>
     <input type="button" id="exportResult" value="下载结果"/>
-    <p id="result" style="width:100%;word-break:break-all;word-wrap:break-word;"></p>
   </div>
 </body>
 <script >
   /***************************=**************************************************************/
-  // document.getElementById("xor").onclick=function(){
-  //   console.log(document.getElementById("passWord").value);
-  //   var a = '0b36bf0f61db95b7ad95c130dcfe5812c2c92a070afdf5579e374d4d443f8ec8';
-  //   var b = 'a7e2acedcba29cc0dabb5efa58babd28c0c1a138603c4f7ea8463706e479df9a';
-  //   var c = document.getElementById('result').innerHTML;
-  //   function hexToBytes(hex) {
-  //     hex = hex.toString();
-  //     for (var bytes = [], c = 0; c < hex.length; c += 2)
-  //       bytes.push(parseInt(hex.substr(c, 2), 16));
-  //     return bytes;
-  //   }
-  //
-  //   // Convert a byte array to a hex string
-  //   function bytesToHex(bytes) {
-  //     for (var hex = [], i = 0; i < bytes.length; i++) {
-  //       var current = bytes[i] < 0 ? bytes[i] + 256 : bytes[i];
-  //       hex.push((current >>> 4).toString(16));
-  //       hex.push((current & 0xF).toString(16));
-  //     }
-  //     return hex.join("");
-  //   }
-  //
-  //   var x = hexToBytes(a);
-  //   var y = hexToBytes(b);
-  //   var z1 = [];
-  //   var z2 = new Array();
-  //   for(var i=0; i < x.length; i++){
-  //     z1.push(x[i] ^ y[i]);
-  //   }
-  //   for(i=0; i <z1.length; i++){
-  //     z2.push(z1[i] ^ y[i]);
-  //   }
-  //   console.log("z1="+bytesToHex(z1));
-  //   console.log("z2="+bytesToHex(z2));
-  //   console.log("x="+bytesToHex(x));
-  //   console.log("c="+c);
-  //   console.log("hexToBytes(c)="+hexToBytes(c));//not a number
-  //   console.log("bytesToHex(c)="+bytesToHex(c));
-  //   console.log("reader="+reader);
-  //   console.log("reader.result="+reader.result.byteLength);
-  //   console.log("file2Memory="+file2Memory);
-  // }
   document.getElementById("xor").onclick=function(){
-    // console.log(document.getElementById("passWord").value);
     var reader2=new FileReader()
-    var b = new Blob([document.getElementById("passWord").value]);
+    var b = new Blob([document.getElementById("myKey").value]);
     reader2.readAsArrayBuffer(b);
     reader2.onload = function () {
-      secretCode=new Int8Array(reader2.result)
-      // console.log("b="+b)
-      // console.log("reader2.result="+reader2.result)
-      console.log("secretCode= "+secretCode)
+      secretKey=new Int8Array(reader2.result)
+      console.log("secretKey= "+secretKey)
       myResult=[]
       myResult2=[]
       for(let i=0,j=0;i<file2Memory.length;){
-        for(j=0;j<secretCode.length&&i+j<file2Memory.length;j++){
-          myResult.push(secretCode[j]^file2Memory[i+j]);
+        for(j=0;j<secretKey.length&&i+j<file2Memory.length;j++){
+          myResult.push(secretKey[j]^file2Memory[i+j]);
         }
         i+=j;
       }
       console.log("myResult= "+myResult)
 
       for(let i=0,j=0;i<myResult.length;){
-        for(j=0;j<secretCode.length&&i+j<myResult.length;j++){
-          myResult2.push(secretCode[j]^myResult[i+j]);
+        for(j=0;j<secretKey.length&&i+j<myResult.length;j++){
+          myResult2.push(secretKey[j]^myResult[i+j]);
         }
         i+=j;
       }
       console.log("myResult2= "+myResult2)
     }
-
-
-    /****/
-    // let val = []
-    // for (let i = 0; i < document.getElementById("passWord").value.length; i++) {
-    //   // console.log(document.getElementById("passWord").value.charCodeAt(i))
-    //   // //汉字占两位但是
-    //   //   val.push(document.getElementById("passWord").value.charCodeAt(i).toString(16))
-    // }
-    // console.log(val);
-    // 将16进制转化为ArrayBuffer
-    // return new Uint8Array(parseInt(h, 16)).buffer
-    // let arrayBuffer = new Int8Array(document.getElementById("passWord").value).buffer;
-    // console.log(arrayBuffer);
-    // let arr2 = Array.prototype.slice.call(new Int8Array(arrayBuffer ));
-    // console.log(arr2);
-
   }
   /***************************=**************************************************************/
   var reader = new FileReader();
   var file2Memory;
-  var secretCode;
+  var secretKey;
   var myResult=[];
   var myResult2=[];
   var file1 = document.getElementById('fileId');
   file1.onchange = function () {
     var file = file1.files[0];
-    console.log("file= "+ file);
     //读取为二进制
     reader.readAsArrayBuffer(file);
-    // reader.readAsBinaryString(file);
-    // reader.readAsText(file);
     //显示进度
     var pro = document.getElementById('pro');
     pro.max = file.size;
@@ -134,17 +68,7 @@
       pro.value = e.loaded;
     }
     reader.onload = function () {
-      document.getElementById('result').innerHTML = reader.result;
-      // console.log(reader);
-      console.log(reader.result);
-      // console.log(reader.result.length);
-      console.log(reader.result.byteLength);
-      /**typedView**/
       file2Memory = new Int8Array(reader.result);
-      console.log("file2Memory= "+file2Memory);
-      /**typedView,必须是4的倍数**/
-      // const x1 = new Int32Array(reader.result);
-      // console.log(x1);
     }
   }
   /***************************=**************************************************************/
@@ -161,17 +85,20 @@
   }
   /**下载文件的方法*/
   function downloadFileByBase64(base64Str, mimeTypeStr, fileName){
-    // var myUrl = URL.createObjectURL(myBlob)
     var myUrl = URL.createObjectURL(base64Str)
     downloadFile(myUrl,fileName)
   }
   var exportButton = document.getElementById('exportResult');
   exportButton.onclick=function(){
-    // var blob = new Blob([reader.result]);
-    // saveAs(blob, "file.txt");//saveAs(blob,filename)
-    // downloadFileByBase64(new Blob([new Int8Array(file2Memory).buffer]), 'image/png', 'tupian.png');
-    downloadFileByBase64(new Blob([file2Memory.buffer]), '', 'tupian.xlsx');
-    // downloadFileByBase64(reader.result, 'image/png', 'tupian.png');
+    downloadFileByBase64(new Blob([new Int8Array(myResult).buffer]), '', file1.files[0].name.match(/^(\S*)\./)[1]+
+            Math.round(Math.random()*100)+'.'+file1.files[0].name.match(/\.(\S*)$/)[1]);
+    // file1.files[0].type.match(/^(\S*)\//)[1]
+    //第二个参数表示从截取结果的第几位开始返回
+  };
+  var exportPassWord = document.getElementById('exportPassWord');
+  exportPassWord.onclick=function(){
+    downloadFileByBase64(new Blob([document.getElementById("myKey").value],{type:"text/plain"}), '', file1.files[0].name.match(/^(\S*)\./)[1]+
+            "密码"+'.'+"txt");
   };
 </script>
 </html>
