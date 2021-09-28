@@ -15,7 +15,7 @@
       上传文件: <input id = "fileId" type="file" name = "file"  />
     </div>
     <progress id="pro" value="0"></progress><br>
-    <label for="passWord">输入密码:</label><input type="text" id="passWord" placeholder="密码"/>
+    <label for="passWord">输入密码:</label> <input type="text" id="passWord" placeholder="不能为空否则出错卡死" value="testKey"/>
     <input type="button" id="exportPassWord" value="下载密码"/>
     <input type="button" id="xor" value="异或"/><br>
     <input type="button" id="exportResult" value="下载结果"/>
@@ -64,17 +64,46 @@
   //   console.log("bytesToHex(c)="+bytesToHex(c));
   //   console.log("reader="+reader);
   //   console.log("reader.result="+reader.result.byteLength);
-  //   console.log("x2="+x2);
+  //   console.log("file2Memory="+file2Memory);
   // }
   document.getElementById("xor").onclick=function(){
     // console.log(document.getElementById("passWord").value);
-    let val = []
-    for (let i = 0; i < document.getElementById("passWord").value.length; i++) {
-      console.log(document.getElementById("passWord").value.charCodeAt(i))
-      //汉字占两位但是
-        val.push(document.getElementById("passWord").value.charCodeAt(i).toString(16))
+    var reader2=new FileReader()
+    var b = new Blob([document.getElementById("passWord").value]);
+    reader2.readAsArrayBuffer(b);
+    reader2.onload = function () {
+      secretCode=new Int8Array(reader2.result)
+      // console.log("b="+b)
+      // console.log("reader2.result="+reader2.result)
+      console.log("secretCode= "+secretCode)
+      myResult=[]
+      myResult2=[]
+      for(let i=0,j=0;i<file2Memory.length;){
+        for(j=0;j<secretCode.length&&i+j<file2Memory.length;j++){
+          myResult.push(secretCode[j]^file2Memory[i+j]);
+        }
+        i+=j;
+      }
+      console.log("myResult= "+myResult)
+
+      for(let i=0,j=0;i<myResult.length;){
+        for(j=0;j<secretCode.length&&i+j<myResult.length;j++){
+          myResult2.push(secretCode[j]^myResult[i+j]);
+        }
+        i+=j;
+      }
+      console.log("myResult2= "+myResult2)
     }
-    console.log(val);
+
+
+    /****/
+    // let val = []
+    // for (let i = 0; i < document.getElementById("passWord").value.length; i++) {
+    //   // console.log(document.getElementById("passWord").value.charCodeAt(i))
+    //   // //汉字占两位但是
+    //   //   val.push(document.getElementById("passWord").value.charCodeAt(i).toString(16))
+    // }
+    // console.log(val);
     // 将16进制转化为ArrayBuffer
     // return new Uint8Array(parseInt(h, 16)).buffer
     // let arrayBuffer = new Int8Array(document.getElementById("passWord").value).buffer;
@@ -85,11 +114,14 @@
   }
   /***************************=**************************************************************/
   var reader = new FileReader();
-  var x2;
+  var file2Memory;
+  var secretCode;
+  var myResult=[];
+  var myResult2=[];
   var file1 = document.getElementById('fileId');
   file1.onchange = function () {
     var file = file1.files[0];
-    console.log(file);
+    console.log("file= "+ file);
     //读取为二进制
     reader.readAsArrayBuffer(file);
     // reader.readAsBinaryString(file);
@@ -105,11 +137,11 @@
       document.getElementById('result').innerHTML = reader.result;
       // console.log(reader);
       console.log(reader.result);
-      console.log(reader.result.length);
+      // console.log(reader.result.length);
       console.log(reader.result.byteLength);
       /**typedView**/
-      x2 = new Int8Array(reader.result);
-      console.log(x2);
+      file2Memory = new Int8Array(reader.result);
+      console.log("file2Memory= "+file2Memory);
       /**typedView,必须是4的倍数**/
       // const x1 = new Int32Array(reader.result);
       // console.log(x1);
@@ -137,8 +169,8 @@
   exportButton.onclick=function(){
     // var blob = new Blob([reader.result]);
     // saveAs(blob, "file.txt");//saveAs(blob,filename)
-    // downloadFileByBase64(new Blob([new Int8Array(x2).buffer]), 'image/png', 'tupian.png');
-    downloadFileByBase64(new Blob([x2.buffer]), '', 'tupian.xlsx');
+    // downloadFileByBase64(new Blob([new Int8Array(file2Memory).buffer]), 'image/png', 'tupian.png');
+    downloadFileByBase64(new Blob([file2Memory.buffer]), '', 'tupian.xlsx');
     // downloadFileByBase64(reader.result, 'image/png', 'tupian.png');
   };
 </script>
