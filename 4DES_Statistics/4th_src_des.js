@@ -934,31 +934,16 @@ function strEnc(data,firstKey,secondKey,thirdKey){
     let changeKey2Show=new Array(65).fill(0)
     let changeMessage2Show=new Array(65).fill(0)
     function changeBit(arr,count){
-        //异或1实现转换,都是对字符数组进行操作
-        //进行最多64次
-        //0位不同和64位不同都只有一种解法，0到64=65，new 【65】
-        //用随机数？两次调用changeBit结果可能会重复？map存已经改变的位，随机之道count位不同
         let copy = [...arr]
         let [...bit64Copy]=bit64
         for(let i=0,temp=0;i<count;i++){
             temp=Math.floor(Math.random()*bit64Copy.length)//Math.floor=new Integer
             copy[bit64Copy[temp]]^=1
             bit64Copy.splice(temp,1)
-            // bit64Copy.splice(bit64Copy.indexOf(temp),1)
         }
-        // const mySet = new Set();
-        // for(let i=0,temp=0;i<count;i++){
-        //     do{//这种解法会大量冲突in后面
-        //         temp=Math.floor(Math.random()*64)
-        //     }
-        //     while(mySet.has(temp))
-        //     mySet.add(temp)
-        //     copy[temp]^=1
-        // }
         return copy
     }
-    function compareBit(oldOne,newOne){
-        //o(n),都是对字符数组进行操作
+    function compareBit(oldOne,newOne){//o(n),都是对字符数组进行操作
         let sum=0
         if(oldOne.length!=newOne.length)return -1
         for(let i=0;i<oldOne.length;i++){
@@ -966,19 +951,7 @@ function strEnc(data,firstKey,secondKey,thirdKey){
         }
         return sum
     }
-    // function packTest(messageArray,keyArray){//这里出错，为什么换了密钥结果还是一样？肯定啊,要比较密文
-    //     let encryptByte = enc(messageArray,keyArray);
-    //     let encryptHex  = bt64ToHex(encryptByte);
-    //     // endata.value=enchex;
-    //     let encryptString = hexToBt64(encryptHex);
-    //     let hex2Byte = new Array();
-    //     for(let m=0;m<encryptString.length;m++){
-    //         hex2Byte [m] = parseInt(encryptString.substring(m,m+1));
-    //     }
-    //     return dec(hex2Byte ,keyArray)
-    // }
     function myTest(myMessage,myKey,myCount) {
-
         // var msg = "abcdefgh";
         var msg = myMessage;
         var bt = strToBt(msg);
@@ -988,7 +961,7 @@ function strEnc(data,firstKey,secondKey,thirdKey){
         var keyB = strToBt(key);
         console.log("strToBt(key)="+strToBt(key))//只要这个
         //密文改变并统计
-        var encByte = enc(bt,keyB);
+        var encByte = enc(bt,keyB);//只要这个
         console.log("enc(bt,keyB)="+enc(bt,keyB))
         var enchex  = bt64ToHex(encByte);
         console.log("bt64ToHex(encByte)="+bt64ToHex(encByte))
@@ -1004,7 +977,7 @@ function strEnc(data,firstKey,secondKey,thirdKey){
         var decbyte= dec(eByte,keyB)
         var decmsg= byteToString(decbyte);
         // alert("decbyte="+decbyte);
-        console.log("decbyte=dec(eByte,keyB)="+decbyte);//只要这个
+        console.log("decbyte=dec(eByte,keyB)="+decbyte);
         // alert("decmsg="+decmsg);
         console.log("decmsg=byteToString(decbyte)="+decmsg);
 
@@ -1013,12 +986,8 @@ function strEnc(data,firstKey,secondKey,thirdKey){
             for(j=0;j<myCount;j++){
                 keyB2=changeBit(keyB,i)
                 bt2=changeBit(bt,i)
-                // console.log("keyB2="+changeBit(keyB,i))
                 changeKey2Show[i]+=compareBit(enc(bt,keyB2),encByte)
                 changeMessage2Show[i]+=compareBit(enc(bt2,keyB),encByte)
-                // console.log(" packTest(bt,keyB2)="+packTest(bt,keyB2))
-                // console.log("keyB"+keyB+" keyB2="+keyB2+" packTest(bt,keyB2)="+packTest(bt,keyB2))
-                // console.log("compareBit(packTest(bt,keyB2),decbyte)="+compareBit(packTest(bt,keyB2),decbyte))
             }
             changeKey2Show[i]/=myCount
             changeMessage2Show[i]/=myCount
