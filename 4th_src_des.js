@@ -932,7 +932,7 @@ function strEnc(data,firstKey,secondKey,thirdKey){
         bit64[i]=i
     }
     let changeKey2Show=new Array(65).fill(0)
-
+    let changeMessage2Show=new Array(65).fill(0)
     function changeBit(arr,count){
         //异或1实现转换,都是对字符数组进行操作
         //进行最多64次
@@ -966,23 +966,25 @@ function strEnc(data,firstKey,secondKey,thirdKey){
         }
         return sum
     }
-    function packTest(messageArray,keyArray){//这里出错，为什么换了密钥结果还是一样？
-        let encryptByte = enc(messageArray,keyArray);
-        let encryptHex  = bt64ToHex(encryptByte);
-        // endata.value=enchex;
-        let encryptString = hexToBt64(encryptHex);
-        let hex2Byte = new Array();
-        for(let m=0;m<encryptString.length;m++){
-            hex2Byte [m] = parseInt(encryptString.substring(m,m+1));
-        }
-        return dec(hex2Byte ,keyArray)
-    }
-    function test() {
+    // function packTest(messageArray,keyArray){//这里出错，为什么换了密钥结果还是一样？肯定啊,要比较密文
+    //     let encryptByte = enc(messageArray,keyArray);
+    //     let encryptHex  = bt64ToHex(encryptByte);
+    //     // endata.value=enchex;
+    //     let encryptString = hexToBt64(encryptHex);
+    //     let hex2Byte = new Array();
+    //     for(let m=0;m<encryptString.length;m++){
+    //         hex2Byte [m] = parseInt(encryptString.substring(m,m+1));
+    //     }
+    //     return dec(hex2Byte ,keyArray)
+    // }
+    function myTest(myMessage,myKey,myCount) {
 
-        var msg = "abcdefgh";
+        // var msg = "abcdefgh";
+        var msg = myMessage;
         var bt = strToBt(msg);
         console.log("strToBt(msg)="+strToBt(msg))//只要这个
-        var key = "12345678";
+        // var key = "12345678";
+        var key = myKey;
         var keyB = strToBt(key);
         console.log("strToBt(key)="+strToBt(key))//只要这个
         //密文改变并统计
@@ -993,7 +995,7 @@ function strEnc(data,firstKey,secondKey,thirdKey){
         // endata.value=enchex;
 
         var encStr = hexToBt64(enchex);
-        alert("encStr="+encStr);
+        // alert("encStr="+encStr);
         console.log("encStr=hexToBt64(enchex)="+encStr);
         var eByte = new Array();
         for(m=0;m<encStr.length;m++){
@@ -1001,24 +1003,47 @@ function strEnc(data,firstKey,secondKey,thirdKey){
         }
         var decbyte= dec(eByte,keyB)
         var decmsg= byteToString(decbyte);
-        alert("decbyte="+decbyte);
+        // alert("decbyte="+decbyte);
         console.log("decbyte=dec(eByte,keyB)="+decbyte);//只要这个
-        alert("decmsg="+decmsg);
+        // alert("decmsg="+decmsg);
         console.log("decmsg=byteToString(decbyte)="+decmsg);
 
-        let keyB2
+        let keyB2,bt2
         for(let i=0,j=0;i<=64;i++){
-            for(j=0;j<10;j++){
+            for(j=0;j<myCount;j++){
                 keyB2=changeBit(keyB,i)
+                bt2=changeBit(bt,i)
                 // console.log("keyB2="+changeBit(keyB,i))
-                changeKey2Show[i]+=compareBit(packTest(bt,keyB2),decbyte)
-                console.log(" packTest(bt,keyB2)="+packTest(bt,keyB2))
+                changeKey2Show[i]+=compareBit(enc(bt,keyB2),encByte)
+                changeMessage2Show[i]+=compareBit(enc(bt2,keyB),encByte)
+                // console.log(" packTest(bt,keyB2)="+packTest(bt,keyB2))
                 // console.log("keyB"+keyB+" keyB2="+keyB2+" packTest(bt,keyB2)="+packTest(bt,keyB2))
                 // console.log("compareBit(packTest(bt,keyB2),decbyte)="+compareBit(packTest(bt,keyB2),decbyte))
             }
-            // changeKey2Show[i]/=10
+            changeKey2Show[i]/=myCount
+            changeMessage2Show[i]/=myCount
         }
-        // for(let i=0;i<=64;i++){
-        //     console.log(i+" "+changeKey2Show[i])
-        // }
+        document.getElementById('result').append("+changeKey2Show");
+        // document.getElementById('result').appendChild(<br>)
+        document.getElementById('result').appendChild(document.createElement("br"))
+        console.log("+changeKey2Show")
+        document.getElementById('result').append("更改的bit个数"+"\t密文平均改变的bit数");
+        document.getElementById('result').appendChild(document.createElement("br"))
+        console.log("更改的bit个数"+"\t密文平均改变的bit数")
+        for(let i=0;i<=64;i++){
+            document.getElementById('result').append(i+"\t\t\t\t"+changeKey2Show[i]);
+            document.getElementById('result').appendChild(document.createElement("br"))
+            console.log(i+"\t\t\t\t"+changeKey2Show[i])
+        }
+        document.getElementById('result').append("+changeMessage2Show");
+        document.getElementById('result').appendChild(document.createElement("br"))
+        console.log("+changeMessage2Show")
+        document.getElementById('result').append("更改的bit个数"+"\t密文平均改变的bit数");
+        document.getElementById('result').appendChild(document.createElement("br"))
+        console.log("更改的bit个数"+"\t密文平均改变的bit数")
+        for(let i=0;i<=64;i++){
+            document.getElementById('result').append(i+"\t\t\t\t"+changeMessage2Show[i]);
+            document.getElementById('result').appendChild(document.createElement("br"))
+            console.log(i+"\t\t\t\t"+changeMessage2Show[i])
+        }
     }
