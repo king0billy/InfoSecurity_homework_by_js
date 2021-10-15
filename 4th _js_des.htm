@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>列表</title>
+</head>
+<body>
+<div>
+    参考的部分资料如下: <br>
+    https://www.cnblogs.com/tianma3798/p/4355949.html<br>
+    https://blog.csdn.net/u010503822/article/details/106699416/<br>
+    https://www.jeeinn.com/2020/07/1339/-> https://stackoverflow.com/questions/20566421/xor-of-two-hex-strings-in-javascript<br>
+    <div>
+        上传文件: <input id = "fileId" type="file" name = "file"  />
+    </div>
+    <div>从磁盘读入浏览器进程的进度条:<progress id="pro" value="0"></progress><br></div>
+    <label for="myKey">输入密码:</label> <input type="text" id="myKey" placeholder="不能为空否则出错卡死" value="testKey"/>
+    <input type="button" id="exportPassWord" value="下载密码"/><br>
+    <input type="button" id="des_encrypt" value="des加密"/>
+    <input type="button" id="des_decrypt" value="des解密"/><br>
+    <input type="button" id="exportResult" value="下载结果"/>
+</div>
+</body>
+<script src="https://cdn.bootcss.com/crypto-js/3.1.9-1/crypto-js.min.js"></script>
+<script src="./4th_src_des.js"></script>
+<script >
+    /***************************=**************************************************************/
+    //DES加密
+    function encryptByDES(message, key){
+        var keyHex = CryptoJS.enc.Utf8.parse(key);
+        var encrypted = CryptoJS.DES.encrypt(message, keyHex, {
+            mode: CryptoJS.mode.ECB,
+            padding: CryptoJS.pad.Pkcs7
+        });
+        return encrypted.ciphertext.toString();
+    }
+    //DES加密
+    function decryptByDES(ciphertext, key){
+        var keyHex = CryptoJS.enc.Utf8.parse(key);
+        var decrypted = CryptoJS.DES.decrypt({
+            ciphertext: CryptoJS.enc.Hex.parse(ciphertext)
+        }, keyHex, {
+            mode: CryptoJS.mode.ECB,
+            padding: CryptoJS.pad.Pkcs7
+        });
+        var result_value = decrypted.toString(CryptoJS.enc.Utf8);
+        return result_value;
+    }
+    document.getElementById("des_encrypt").onclick=function(){
+        test();
+        // var reader2=new FileReader()
+        // var b = new Blob([document.getElementById("myKey").value]);
+        // reader2.readAsArrayBuffer(b);
+        // reader2.onload = function () {
+        //     secretKey=new Int8Array(reader2.result)
+        //     console.log("secretKey= "+secretKey)
+        //     myResult=[]
+        //     myResult2=[]
+        //     for(let i=0,j=0;i<file2Memory.length;){
+        //         for(j=0;j<secretKey.length&&i+j<file2Memory.length;j++){
+        //             myResult.push(secretKey[j]^file2Memory[i+j]);
+        //         }
+        //         i+=j;
+        //     }
+        //     console.log("myResult= "+myResult)
+        //
+        //     for(let i=0,j=0;i<myResult.length;){
+        //         for(j=0;j<secretKey.length&&i+j<myResult.length;j++){
+        //             myResult2.push(secretKey[j]^myResult[i+j]);
+        //         }
+        //         i+=j;
+        //     }
+        //     console.log("myResult2= "+myResult2)
+        // }
+    }
+    /***************************=**************************************************************/
+    var reader = new FileReader();
+    var file2Memory;
+    var secretKey;
+    var myResult=[];
+    var myResult2=[];
+    var file1 = document.getElementById('fileId');
+    file1.onchange = function () {
+        var file = file1.files[0];
+        //读取为二进制
+        reader.readAsArrayBuffer(file);
+        //显示进度
+        var pro = document.getElementById('pro');
+        pro.max = file.size;
+        pro.value = 0;
+        reader.onprogress = function (e) {
+            pro.value = e.loaded;
+        }
+        reader.onload = function () {
+            file2Memory = new Int8Array(reader.result);
+        }
+    }
+    /***************************=**************************************************************/
+    /**封装blob对象*/
+    /**创建一个a标签，并做下载点击事件*/
+    function downloadFile(hrefUrl,fileName){
+        var a = document.createElement("a")
+        a.setAttribute("href",hrefUrl)
+        a.setAttribute("download",fileName)
+        a.setAttribute("target","_blank")
+        let clickEvent = document.createEvent("MouseEvents");
+        clickEvent.initEvent("click", true, true);
+        a.dispatchEvent(clickEvent);
+    }
+    /**下载文件的方法*/
+    function downloadFileByBase64(base64Str, mimeTypeStr, fileName){
+        var myUrl = URL.createObjectURL(base64Str)
+        downloadFile(myUrl,fileName)
+    }
+    var exportButton = document.getElementById('exportResult');
+    exportButton.onclick=function(){
+        downloadFileByBase64(new Blob([new Int8Array(myResult).buffer]), '', file1.files[0].name.match(/^(\S*)\./)[1]+
+            Math.round(Math.random()*100)+'.'+file1.files[0].name.match(/\.(\S*)$/)[1]);
+        // file1.files[0].type.match(/^(\S*)\//)[1]
+        //第二个参数表示从截取结果的第几位开始返回
+    };
+    var exportPassWord = document.getElementById('exportPassWord');
+    exportPassWord.onclick=function(){
+        downloadFileByBase64(new Blob([document.getElementById("myKey").value],{type:"text/plain"}), '', file1.files[0].name.match(/^(\S*)\./)[1]+
+            "密码"+'.'+"txt");
+    };
+</script>
+</html>
+
+
+
+
