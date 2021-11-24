@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+<h5>请右键点开控制台查看效果</h5>
+<label >输入素数的范围,最大sqrt(Integer.Max)=46341:</label> <input type="number" id="myCount" placeholder="" value="100" min="100" max="46341"/>
+<button class="dom1" onclick="initPrim()">1.素数生成器</button><br>
+<!--<button class="one" onclick="init()">开始</button>-->
+<button class="dom2" onclick="randomPrim()">2.随机选择素数p q和e</button>
+<button class="dom3" onclick="primaryKey()">3.生成私钥</button><br>
+<label >懒得搞string转二进制再转数字了,直接输入数字明文(必须小于p*q??):</label> <input type="number" id="lazy" placeholder="" value="1000" min="0" max="46341"/>
+<button class="dom5" onclick="encrypt()">5.加密</button>
+<button class="dom6" onclick="decrypt()">6.解密</button><br>
+<label >随机选择的p,q,e,n=p*q,n1=(p-1)*(q-1)等信息:</label>
+<div id="result" style="width:100%;word-break:break-all;word-wrap:break-word;"></div><br>
+
+</body>
+<!--21474836  2147483647 46341-->
+<script>
+    var PrimeArray=[2];
+    var p;var q;var e;var n;var n1;var d;var word;var sec;var word1;
+
+    //欧几里得算法--求最大公约数
+    function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+    }
+
+
+    //判断是否为素数
+    function isPri(n) {
+        if (n === 0 || n === 1) {
+            return false;
+        }
+        if (n === 2) {
+            return true;
+        }
+        for (var i = 2; i < Math.sqrt(n)+1; i++) {
+            if (n % i === 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    //扩展欧几里得算法;
+    function all(e, n) {
+        var e, n, j, x, y;
+        var arr = [];
+
+        function eGcd(a, b, x, y) {
+            if (b === 0) {
+                x = 1;
+                y = 0;
+                arr = [x, y]
+                return arr;
+            }
+            var ret = eGcd(b, a % b, x, y);
+            var t = ret[0]
+            x = ret[1];
+            y = t - parseInt(a / b) * x;
+            ret = [x, y]
+
+            return ret;
+        }
+
+        return eGcd(e, n, x, y);
+    }
+
+
+    //求a的n次方
+    function an(a, n) {
+        var s = 1;
+        for (var i = 0; i < n; i++) {
+            s *= a
+        }
+        return s;
+    }
+
+    //快速模指运算  a^n mod b
+    function expMod(a, n, b) {
+        var t
+
+        if (n == 0) return 1 % b;
+        if (n == 1) return a % b;
+
+        t = expMod(a, n / 2, b);
+        t = t * t % b;
+
+        //如果n是奇数，需要多乘一次a
+        if ((n & 1) == 1) t = t * a % b;
+        return t;
+
+    }
+
+    //initPrim 生成素数表
+    function initPrim(limit){
+        document.getElementById('result').innerHTML=' '
+        let count=document.getElementById("myCount").value;
+        for(let i=2;i<count;i++){
+            let j;let tag=0;
+            for(j=0;j<PrimeArray.length&&PrimeArray[j]<Math.sqrt(i)+1;j++){
+                if(i%PrimeArray[j]===0){tag=1;break;}
+            }
+            if(tag===0){PrimeArray.push(i);}
+            // if(PrimeArray[j]>=Math.sqrt(i)+1||j==PrimeArray.length){
+            //     PrimeArray.add(i);
+            // }
+        }
+        console.log(PrimeArray)
+        // console.log(Math.sqrt(2147483647))
+    }
+    function randomPrim(){
+        p=PrimeArray[Math.floor(Math.random()*PrimeArray.length)];
+        do{
+            q=PrimeArray[Math.floor(Math.random()*PrimeArray.length)];
+        }while(p===q)
+        do{
+            e=PrimeArray[Math.floor(Math.random()*PrimeArray.length)];
+        }while(e===q||e===p)
+        n=p*q;n1=(p-1)*(q-1);
+        document.getElementById('result').append("p=\t"+p);
+        document.getElementById('result').appendChild(document.createElement("br"))
+        document.getElementById('result').append("q=\t"+q);
+        document.getElementById('result').appendChild(document.createElement("br"))
+        document.getElementById('result').append("e=\t"+e);
+        document.getElementById('result').appendChild(document.createElement("br"))
+        document.getElementById('result').append("n=\t"+n);
+        document.getElementById('result').appendChild(document.createElement("br"))
+        document.getElementById('result').append("n1=\t"+n1);
+        document.getElementById('result').appendChild(document.createElement("br"))
+    }
+    function  primaryKey(){
+        var temp = all(e, n1)
+        d = temp[0]
+        if (d < 0) {
+            d = d + n1
+        }
+        document.getElementById('result').append("d=\t"+d);
+        document.getElementById('result').appendChild(document.createElement("br"))
+    }
+    function  encrypt(){
+        word=document.getElementById("lazy").value;
+        sec = expMod(word, e, n)
+        document.getElementById('result').append("明文=\t"+word);
+        document.getElementById('result').appendChild(document.createElement("br"))
+        document.getElementById('result').append("密文=\t"+sec);
+        document.getElementById('result').appendChild(document.createElement("br"))
+    }
+    function  decrypt(){
+        word1 = expMod(sec, d, n)
+        document.getElementById('result').append("解密文=\t"+word1);
+        document.getElementById('result').appendChild(document.createElement("br"))
+    }
+    // function strToBinary(str){
+    //     var result = [];
+    //     var list = str.split("");
+    //     for(var i=0;i<list.length;i++){
+    //         if(i != 0){
+    //             esult.push(" ");
+    //         }
+    //         var item = list[i];
+    //         var binaryStr = item.charCodeAt().toString(2);
+    //         result.push(binartStr);
+    //     }
+    //     return result.join("");
+    // }
+</script>
+</html>
