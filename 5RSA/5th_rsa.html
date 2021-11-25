@@ -9,20 +9,23 @@
 </head>
 
 <body>
-<h5>请右键点开控制台查看效果</h5>
-<label >输入素数的范围,最大sqrt(Integer.Max)=46341:</label> <input type="number" id="myCount" placeholder="" value="100" min="100" max="46341"/>
+<label >输入素数的范围,最大:sqrt(Integer.MAX)=46341:</label> <input type="number" id="myCount" placeholder="" value="100" min="100" max="46341"/>
 <button class="dom1" onclick="initPrim()">1.素数生成器</button><br>
 <!--<button class="one" onclick="init()">开始</button>-->
-<button class="dom2" onclick="randomPrim()">2.随机选择素数p q和e</button>
-<button class="dom3" onclick="primaryKey()">3.生成私钥</button><br>
-<label >懒得搞string转二进制再转数字了,直接输入数字明文(必须小于p*q??):</label> <input type="number" id="lazy" placeholder="" value="1000" min="0" max="46341"/>
-<button class="dom5" onclick="encrypt()">5.加密</button>
-<button class="dom6" onclick="decrypt()">6.解密</button><br>
+<div id="dom22" style="width:100%;word-break:break-all;word-wrap:break-word;">
+    <div id="dom33" style="width:100%;word-break:break-all;word-wrap:break-word;"></div>
+</div>
+<!--<button class="dom2" onclick="randomPrim()">2.随机选择素数p q和e</button>-->
+<!--<button class="dom3" onclick="primaryKey()">3.生成私钥</button><br>-->
+<div id="dom44" style="width:100%;word-break:break-all;word-wrap:break-word;"></div>
+<!--<label >懒得搞string转二进制再转数字了,直接输入数字明文(必须小于p*q??):</label> <input type="number" id="lazy" placeholder="" value="1000" min="0" max="46341"/>-->
+<!--<button class="dom5" onclick="encrypt()">5.加密</button>-->
+<!--<button class="dom6" onclick="decrypt()">6.解密</button><br>-->
 <label >随机选择的p,q,e,n=p*q,n1=(p-1)*(q-1)等信息:</label>
 <div id="result" style="width:100%;word-break:break-all;word-wrap:break-word;"></div><br>
-
+<div id="result0" style="width:100%;word-break:break-all;word-wrap:break-word;"></div><br>
 </body>
-<!--21474836  2147483647 46341-->
+<!--21474836  2147483647 sqrt(Integer.Max)=46341-->
 <script>
     var PrimeArray=[2];
     var p;var q;var e;var n;var n1;var d;var word;var sec;var word1;
@@ -103,6 +106,9 @@
     //initPrim 生成素数表
     function initPrim(limit){
         document.getElementById('result').innerHTML=' '
+        document.getElementById('result0').innerHTML=' '
+        document.getElementById('dom22').innerHTML='<div id="dom33" style="width:100%;word-break:break-all;word-wrap:break-word;"></div>'
+        document.getElementById('dom44').innerHTML='<div id="dom33" style="width:100%;word-break:break-all;word-wrap:break-word;"></div>'
         let count=document.getElementById("myCount").value;
         for(let i=2;i<count;i++){
             let j;let tag=0;
@@ -114,10 +120,21 @@
             //     PrimeArray.add(i);
             // }
         }
+        document.getElementById('result0').append("p=\t"+PrimeArray);
+
+        var btn=document.createElement("BUTTON");
+        var t=document.createTextNode("2.随机选择素数p q和e");
+        btn.onclick=function (){
+            randomPrim()
+        };
+        btn.appendChild(t);
+        document.getElementById('dom22').appendChild(btn);
+
         console.log(PrimeArray)
         // console.log(Math.sqrt(2147483647))
     }
     function randomPrim(){
+        document.getElementById('dom33').innerHTML=' '
         p=PrimeArray[Math.floor(Math.random()*PrimeArray.length)];
         do{
             q=PrimeArray[Math.floor(Math.random()*PrimeArray.length)];
@@ -136,6 +153,15 @@
         document.getElementById('result').appendChild(document.createElement("br"))
         document.getElementById('result').append("n1=\t"+n1);
         document.getElementById('result').appendChild(document.createElement("br"))
+
+        btn=document.createElement("BUTTON");
+        var t=document.createTextNode("3.生成私钥");
+        btn.onclick=function (){
+            primaryKey();
+        };
+        btn.appendChild(t);
+        document.getElementById('dom22').innerHTML='<div id="dom33" style="width:100%;word-break:break-all;word-wrap:break-word;"></div>'
+        document.getElementById('dom33').appendChild(btn);
     }
     function  primaryKey(){
         var temp = all(e, n1)
@@ -143,34 +169,69 @@
         if (d < 0) {
             d = d + n1
         }
+        document.getElementById('dom33').innerHTML='';
+        document.getElementById('dom44').innerHTML='<label >懒得搞string转二进制再转数字了,直接输入数字明文(必须小于p*q??):</label> <input type="number" id="lazy" placeholder="" value="1000" min="0" max="46341"/>' +
+            '<button class="dom5" onclick="encrypt()">5.加密</button>'
         document.getElementById('result').append("d=\t"+d);
         document.getElementById('result').appendChild(document.createElement("br"))
     }
     function  encrypt(){
         word=document.getElementById("lazy").value;
+        if(word>=n-1){alert('输入的明文大于等于n-1，不符合要求！');return;}
         sec = expMod(word, e, n)
-        document.getElementById('result').append("明文=\t"+word);
-        document.getElementById('result').appendChild(document.createElement("br"))
-        document.getElementById('result').append("密文=\t"+sec);
-        document.getElementById('result').appendChild(document.createElement("br"))
+
+        if(document.getElementById('ming')){
+            document.getElementById("result").removeChild(document.getElementById('ming'));
+        }
+        if(document.getElementById('mi')){
+            document.getElementById("result").removeChild(document.getElementById('mi'));
+        }
+        if(document.getElementById('de')){
+            document.getElementById("result").removeChild(document.getElementById('de'));
+        }
+
+        var textMing=document.createElement("div");
+        textMing.setAttribute("id","ming");
+        var part=document.createTextNode("明文=\t"+word+" ");
+        textMing.appendChild(part);
+
+        var textMi=document.createElement("div");
+        textMi.setAttribute("id","mi");
+        part=document.createTextNode("密文=\t"+sec+" ");
+        textMi.appendChild(part);
+
+        // document.getElementById('result').append("<div id='ming'>明文=\t"+word+"</div>");
+        document.getElementById('result').appendChild(textMing);
+        // document.getElementById('result').appendChild(document.createElement("br"))
+
+        // document.getElementById('result').append("<div id='mi'>密文=\t"+sec+"</div>");
+        document.getElementById('result').appendChild(textMi);
+        // document.getElementById('result').appendChild(document.createElement("br"))
+
+        document.getElementById('dom44').innerHTML='<label >懒得搞string转二进制再转数字了,直接输入数字明文(必须小于p*q??):</label> <input type="number" id="lazy" placeholder="" value="1000" min="0" max="46341"/>' +
+            '<button class="dom5" onclick="encrypt()">5.加密</button>'
+        var btn=document.createElement("BUTTON");
+        var t=document.createTextNode("6.解密");
+        btn.onclick=function (){
+            decrypt()
+        };
+        btn.appendChild(t);
+        document.getElementById('dom44').appendChild(btn);
     }
     function  decrypt(){
         word1 = expMod(sec, d, n)
-        document.getElementById('result').append("解密文=\t"+word1);
-        document.getElementById('result').appendChild(document.createElement("br"))
+        if(document.getElementById('de')){
+            document.getElementById("result").removeChild(document.getElementById('de'));
+        }
+        var textDe=document.createElement("div");
+        textDe.setAttribute("id","de");
+        part=document.createTextNode("解密文=\t"+word1+" ");
+        textDe.appendChild(part);
+
+        document.getElementById('result').appendChild(textDe);
+
+        // document.getElementById('result').append("解密文=\t"+word1);
+        // document.getElementById('result').appendChild(document.createElement("br"))
     }
-    // function strToBinary(str){
-    //     var result = [];
-    //     var list = str.split("");
-    //     for(var i=0;i<list.length;i++){
-    //         if(i != 0){
-    //             esult.push(" ");
-    //         }
-    //         var item = list[i];
-    //         var binaryStr = item.charCodeAt().toString(2);
-    //         result.push(binartStr);
-    //     }
-    //     return result.join("");
-    // }
 </script>
 </html>
