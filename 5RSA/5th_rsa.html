@@ -9,7 +9,8 @@
 </head>
 
 <body>
-<label >输入素数的范围,最大:sqrt(Integer.MAX)=46341:</label> <input type="number" id="myCount" placeholder="" value="100" min="100" max="46341"/>
+<div style="text-align: center;"><h2 >RSA!</h2>
+<label >输入素数的范围,最大:21474836:</label> <input type="number" id="myCount" placeholder="" value="100" min="100" max="21474836"/>
 <button class="dom1" onclick="initPrim()">1.素数生成器</button><br>
 <!--<button class="one" onclick="init()">开始</button>-->
 <div id="dom22" style="width:100%;word-break:break-all;word-wrap:break-word;">
@@ -24,28 +25,30 @@
 <label >随机选择的p,q,e,n=p*q,n1=(p-1)*(q-1)等信息:</label>
 <div id="result" style="width:100%;word-break:break-all;word-wrap:break-word;"></div><br>
 <div id="result0" style="width:100%;word-break:break-all;word-wrap:break-word;"></div><br>
+</div>
 </body>
-<!--21474836  2147483647 sqrt(Integer.Max)=46341-->
+<!--21474836  2147483647 sqrt(Integer.MAX)=46341-->
 <script>
     var PrimeArray=[2];
     var p;var q;var e;var n;var n1;var d;var word;var sec;var word1;
 
     //欧几里得算法--求最大公约数
     function gcd(a, b) {
-        return b === 0 ? a : gcd(b, a % b);
+        return b == 0 ? a : gcd(b, a % b);
     }
 
 
     //判断是否为素数
     function isPri(n) {
-        if (n === 0 || n === 1) {
+        if (n == 0n || n == 1n) {
             return false;
         }
-        if (n === 2) {
+        if (n == 2n) {
             return true;
         }
-        for (var i = 2; i < Math.sqrt(n)+1; i++) {
-            if (n % i === 0) {
+        // let Math.sqrt(n);
+        for (let i = 2; i < Math.sqrt(n)+1n; i++) {
+            if (n % i == 0n) {
                 return false;
             }
         }
@@ -59,16 +62,16 @@
         var arr = [];
 
         function eGcd(a, b, x, y) {
-            if (b === 0) {
-                x = 1;
-                y = 0;
+            if (b == 0n) {
+                x = 1n;
+                y = 0n;
                 arr = [x, y]
                 return arr;
             }
             var ret = eGcd(b, a % b, x, y);
-            var t = ret[0]
-            x = ret[1];
-            y = t - parseInt(a / b) * x;
+            var t = ret[0n]
+            x = ret[1n];
+            y = t - BigInt(parseInt(a / b)) * x;
             ret = [x, y]
 
             return ret;
@@ -80,8 +83,8 @@
 
     //求a的n次方
     function an(a, n) {
-        var s = 1;
-        for (var i = 0; i < n; i++) {
+        var s = 1n;
+        for (var i = 0n; i < n; i++) {
             s *= a
         }
         return s;
@@ -91,14 +94,14 @@
     function expMod(a, n, b) {
         var t
 
-        if (n == 0) return 1 % b;
-        if (n == 1) return a % b;
+        if (n == 0n) return 1n % b;
+        if (n == 1n) return a % b;
 
-        t = expMod(a, n / 2, b);
+        t = expMod(a, n / 2n, b);
         t = t * t % b;
 
         //如果n是奇数，需要多乘一次a
-        if ((n & 1) == 1) t = t * a % b;
+        if ((n & 1n) == 1n) t = t * a % b;
         return t;
 
     }
@@ -109,13 +112,13 @@
         document.getElementById('result0').innerHTML=' '
         document.getElementById('dom22').innerHTML='<div id="dom33" style="width:100%;word-break:break-all;word-wrap:break-word;"></div>'
         document.getElementById('dom44').innerHTML='<div id="dom33" style="width:100%;word-break:break-all;word-wrap:break-word;"></div>'
-        let count=document.getElementById("myCount").value;
+        let count=BigInt(document.getElementById("myCount").value);
         for(let i=2;i<count;i++){
             let j;let tag=0;
             for(j=0;j<PrimeArray.length&&PrimeArray[j]<Math.sqrt(i)+1;j++){
-                if(i%PrimeArray[j]===0){tag=1;break;}
+                if(i%PrimeArray[j]==0){tag=1;break;}
             }
-            if(tag===0){PrimeArray.push(i);}
+            if(tag==0){PrimeArray.push(i);}
             // if(PrimeArray[j]>=Math.sqrt(i)+1||j==PrimeArray.length){
             //     PrimeArray.add(i);
             // }
@@ -135,14 +138,14 @@
     }
     function randomPrim(){
         document.getElementById('dom33').innerHTML=' '
-        p=PrimeArray[Math.floor(Math.random()*PrimeArray.length)];
+        p=BigInt(PrimeArray[Math.floor(Math.random()*PrimeArray.length)]);
         do{
-            q=PrimeArray[Math.floor(Math.random()*PrimeArray.length)];
-        }while(p===q)
+            q=BigInt(PrimeArray[Math.floor(Math.random()*PrimeArray.length)]);
+        }while(p==q)
         do{
-            e=PrimeArray[Math.floor(Math.random()*PrimeArray.length)];
-        }while(e===q||e===p)
-        n=p*q;n1=(p-1)*(q-1);
+            e=BigInt(PrimeArray[Math.floor(Math.random()*PrimeArray.length)]);
+        }while(e==q||e==p)
+        n=p*q;n1=(p-1n)*(q-1n);
         document.getElementById('result').append("p=\t"+p);
         document.getElementById('result').appendChild(document.createElement("br"))
         document.getElementById('result').append("q=\t"+q);
@@ -165,19 +168,25 @@
     }
     function  primaryKey(){
         var temp = all(e, n1)
-        d = temp[0]
+        d = BigInt(temp[0])
         if (d < 0) {
             d = d + n1
         }
         document.getElementById('dom33').innerHTML='';
-        document.getElementById('dom44').innerHTML='<label >懒得搞string转二进制再转数字了,直接输入数字明文(必须小于p*q??):</label> <input type="number" id="lazy" placeholder="" value="1000" min="0" max="46341"/>' +
-            '<button class="dom5" onclick="encrypt()">5.加密</button>'
+        document.getElementById('dom44').innerHTML='<label >懒得搞string转二进制再转数字了,直接输入数字明文(必须小于p*q??):</label> <input type="number" id="lazy" value="9999" placeholder="" min="0"/>' +
+            '<button class="dom5" onclick="encrypt()">5.加密</button>';
+        //value="99999" placeholder="" min="0"
+        // document.getElementById('lazy').value = n-2;
+        // document.getElementById('lazy').setAttribute("value",n-2);
+        // document.getElementById('lazy').value = n-2+ "";
+        // document.getElementById('lazy').setAttribute("value",n-2+"");
+
         document.getElementById('result').append("d=\t"+d);
         document.getElementById('result').appendChild(document.createElement("br"))
     }
     function  encrypt(){
-        word=document.getElementById("lazy").value;
-        if(word>=n-1){alert('输入的明文大于等于n-1，不符合要求！');return;}
+        word=BigInt(document.getElementById("lazy").value);
+        if(word>=n-1n){alert('输入的明文大于等于n-1，不符合要求！');return;}
         sec = expMod(word, e, n)
 
         if(document.getElementById('ming')){
@@ -208,7 +217,7 @@
         document.getElementById('result').appendChild(textMi);
         // document.getElementById('result').appendChild(document.createElement("br"))
 
-        document.getElementById('dom44').innerHTML='<label >懒得搞string转二进制再转数字了,直接输入数字明文(必须小于p*q??):</label> <input type="number" id="lazy" placeholder="" value="1000" min="0" max="46341"/>' +
+        document.getElementById('dom44').innerHTML='<label >懒得搞string转二进制再转数字了,直接输入数字明文(必须小于p*q??):</label> <input type="number" id="lazy" placeholder="" value="9999" min="0" max="46341"/>' +
             '<button class="dom5" onclick="encrypt()">5.加密</button>'
         var btn=document.createElement("BUTTON");
         var t=document.createTextNode("6.解密");
